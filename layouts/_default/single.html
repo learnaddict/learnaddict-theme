@@ -1,0 +1,23 @@
+{{ define "main" }}
+  <div class="container-md p-3 bg-white col-8">
+    {{ with .Params.cover }}
+    <img src="{{ .image }}" class="img-fluid" style="max-height: 500px;" alt="{{ .alt }}">
+    {{ end }}
+
+    <h1>{{ .Title }}</h1>
+    {{ if .Date }}
+    {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+    {{ $dateHuman := .Date | time.Format ":date_long" }}
+    <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+    {{ else }}
+    {{ with .GitInfo }}
+  {{ .AuthorDate.Format "2006-01-02" }} 
+{{ end }}
+{{ end }}
+    {{ .Content }}
+
+    
+  </div>
+
+  {{ partial "rightsidebar.html" . }}
+{{ end }}

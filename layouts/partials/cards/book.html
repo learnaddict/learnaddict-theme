@@ -1,0 +1,14 @@
+<div class="col-md-2 mt-3">
+    <div class="card" style="min-height: 450px;">
+      <a href="{{ .RelPermalink }}" class="no-underline small-text">
+        {{ $coverImagePath := printf "/covers/*%s" (path.Base .Params.book.cover.medium) }}
+        {{ $coverImage := resources.GetMatch $coverImagePath }}
+        {{ $noCoverImage := resources.GetMatch "/covers/nocoverimage.png" }}
+        <img src="{{ if $coverImage }}{{ $coverImage.Permalink }}{{ else }}{{ $noCoverImage.Permalink }}{{ end }}" class="card-img-top" alt="Book Cover for {{ .Title }}" style="max-width: 250px; max-height: 250px;">
+      </a>
+        <div class="card-body">
+            <h5 class="card-title"><a href="{{ .RelPermalink }}" class="no-underline small-text">{{ .LinkTitle }}</a></h5>
+            <p class="card-text">{{ .Params.book.number_of_pages }} Pages, Published {{ .Params.book.publish_date }}</p>
+        </div>
+    </div>
+</div>

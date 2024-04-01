@@ -1,0 +1,10 @@
+{{ define "main" }}
+<div class="container-md p-3 bg-white">
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+  {{ range .Pages }}
+    {{ partial "cards/hcard.html" . }}
+  {{ end }}
+  </div>
+</div>
+{{ end }}

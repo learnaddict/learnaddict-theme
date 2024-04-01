@@ -1,0 +1,195 @@
+{{- $thisPage := . -}}
+{{- $allPages := .Site.RegularPages -}}
+{{ $.Scratch.Set "edges" slice }}
+{{ $.Scratch.Set "nodes" slice }}
+{{ $.Scratch.Set "dictCount" 0 }}
+
+{{ $count := $.Scratch.Get "dictCount" }}
+{{ $dict := dict "id" $count "label" .Title "title" .Title "group" .Section "url" .RelPermalink "uuid" .Params.uuid }}
+{{ $.Scratch.Add "nodes" (slice $dict) }}
+{{ $.Scratch.Set "dictCount" (add $count 1) }}
+
+{{ range $index, $element := .Params.connections }}
+  {{ $page := (index (where $.Site.RegularPages ".uuid" $element) 0) }}
+  {{ if $page }}
+    {{- $nodes := $.Scratch.Get "nodes" -}}
+    {{- $pagePresent := index (where $nodes "uuid" $page.uuid) 0 "id" -}}
+    {{ if not $pagePresent }}
+      {{ $count := $.Scratch.Get "dictCount" }}
+      {{ $dict := dict "id" $count "label" $page.Title "title" $page.Title "group" $page.Section "url" $page.RelPermalink "uuid" $page.uuid }}
+      {{ $.Scratch.Add "nodes" (slice $dict) }}
+      {{ $.Scratch.Set "dictCount" (add $count 1) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+
+{{- range $currentPage := $allPages -}}
+  {{- range $connectionUuid := $currentPage.Params.connections -}}
+    {{ if eq $connectionUuid $thisPage.Params.uuid }}
+      {{- $connectedPage := (index (where $allPages ".Params.uuid" $connectionUuid) 0) -}}
+
+      {{- if $connectedPage -}}  
+        {{ $count := $.Scratch.Get "dictCount" }}
+        {{- $nodes := $.Scratch.Get "nodes" -}} 
+        {{- $pagePresent := index (where $nodes "uuid" $connectedPage.Params.uuid) 0 "id" -}}
+
+        {{ if not $pagePresent }}
+            {{ $dict := dict "id" $count "label" $currentPage.Title "title" $currentPage.Title "group" $currentPage.Section "url" $currentPage.RelPermalink "uuid" $currentPage.Params.uuid }}
+            {{ $.Scratch.Add "nodes" (slice $dict) }}
+            {{ $.Scratch.Set "dictCount" (add $count 1) }}
+        {{ end }}
+        
+        {{- $nodes := $.Scratch.Get "nodes" -}}
+        {{- $currentPageID := index (where $nodes "uuid" $currentPage.Params.uuid) 0 "id" -}}
+        {{- $connectedPageID := index (where $nodes "uuid" $connectedPage.Params.uuid) 0 "id" -}}
+        {{- $edge := dict "from" $currentPageID "to" $connectedPageID -}}
+        {{- $.Scratch.Add "edges" (slice $edge) -}}
+      {{ end }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+ 
+{{ range $connectionUuid := $thisPage.Params.connections }}
+  {{ $connectedPage := (index (where $allPages ".Params.uuid" $connectionUuid) 0) }}
+  {{ if $connectedPage }}
+    {{ $count := $.Scratch.Get "dictCount" }}
+    {{- $nodes := $.Scratch.Get "nodes" -}} 
+    {{- $pagePresent := index (where $nodes "uuid" $connectedPage.Params.uuid) 0 "id" -}}
+
+    {{ if not $pagePresent }}
+        {{ $dict := dict "id" $count "label" $connectedPage.Title "title" $connectedPage.Title "group" $connectedPage.Section "url" $connectedPage.RelPermalink "uuid" $connectedPage.Params.uuid }}
+        {{ $.Scratch.Add "nodes" (slice $dict) }}
+        {{ $.Scratch.Set "dictCount" (add $count 1) }}
+    {{ end }}
+
+    {{- $nodes := $.Scratch.Get "nodes" -}}
+    {{- $currentPageID := index (where $nodes "uuid" $thisPage.Params.uuid) 0 "id" -}}
+    {{- $connectedPageID := index (where $nodes "uuid" $connectedPage.Params.uuid) 0 "id" -}}
+    {{- $edge := dict "from" $currentPageID "to" $connectedPageID -}}
+    {{- $.Scratch.Add "edges" (slice $edge) -}}
+  {{ else }}
+    Error finding 
+  {{ end }}
+
+{{ end }}
+
+{{/*
+<script>
+    const n = {{ $.Scratch.Get "nodes" | jsonify | safeJS }};
+    console.log(n);
+    const e = {{ $.Scratch.Get "edges" | jsonify | safeJS }}
+    console.log(e);
+</script>
+*/}}
+
+
+<div id="mynetwork" style="width: 100%; height: 500px; "></div>
+
+
+<script type="text/javascript" src="/assets/vis-network/vis-network.min.js"></script>
+<!--
+  Including other packages like Vis Timeline or Vis Graph3D here won't work.
+  You need the peer build to do that.
+-->
+
+<script type="text/javascript">
+  // create an array with nodes
+  var nodes = new vis.DataSet({{ $.Scratch.Get "nodes" | jsonify | safeJS }});
+
+  // create an array with edges
+  var edges = new vis.DataSet({{ $.Scratch.Get "edges" | jsonify | safeJS }});
+
+  var groups = {
+    posts: {
+        color: {
+            background: 'red',
+            border: 'darkred',
+        },
+    },
+    pages: {
+        color: {
+            background: 'blue',
+            border: 'darkblue',
+        },
+    },
+    books: {
+        color: {
+            background: 'green',
+            border: 'darkgreen',
+        },
+    },
+    zettles: {
+        color: {
+            background: 'orange',
+            border: 'darkorange',
+        }
+    },
+    projects: {
+        color: {
+            background: 'yellow',
+            border: 'darkyellow',
+        }
+    }
+};
+
+  // create a network
+  var container = document.getElementById("mynetwork");
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = {
+        nodes: {
+            shape: 'dot',
+            size: 6,
+            font: {
+                color: '#111'
+            }
+        },
+        edges: {
+            smooth: true,
+            color: {color:'#111', highlight:'#111', hover: '#111'},
+            width: 2
+        },
+        interaction: {hover: true},
+        physics: {
+            stabilization: false,
+            barnesHut: {
+                gravitationalConstant: -8000,
+                springConstant: 0.04,
+                springLength: 95
+            }
+        },
+        layout: {
+            randomSeed: undefined,
+            improvedLayout:true
+        },
+        groups: groups
+    };
+  var network = new vis.Network(container, data, options);
+  network.on("click", function (params) {
+    // Check if a node was clicked
+    if (params.nodes.length > 0) {
+        var nodeId = params.nodes[0]; // Get the id of the clicked node
+        var nodeData = nodes.get(nodeId); // Assuming 'nodes' is your DataSet
+
+        // Check if the clicked node has a URL property
+        if (nodeData.url) {
+            window.open(nodeData.url, '_blank'); // Open the URL in a new window
+        }
+    }
+});
+</script>
+
+
+<div id="networkLegend" class="legend mt-3 d-flex align-items-center flex-wrap">
+    <h5 class="mr-2">Legend:</h5>
+    <div class="legend-item d-flex align-items-center mr-2 p-3"><span class="legend-circle" style="background-color: #ff0000;"></span> Posts</div>
+    <div class="legend-item d-flex align-items-center p-3"><span class="legend-circle" style="background-color: #ffa07a;"></span> Zettles</div>
+    <div class="legend-item d-flex align-items-center p-3"><span class="legend-circle" style="background-color: #fcff3f;"></span> Projects</div>
+    <div class="legend-item d-flex align-items-center mr-2 p-3"><span class="legend-circle" style="background-color: #1c1b70;"></span> Tasks</div>
+    <div class="legend-item d-flex align-items-center mr-2 p-3"><span class="legend-circle" style="background-color: #066113;"></span> Books</div>
+</div>
+

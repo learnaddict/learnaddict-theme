@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">{{ site.Title }}</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarScroll">
+        <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+          <li class="nav-item">
+            <a class="nav-link{{ if .IsHome }} active" aria-current="page{{ end }}" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "posts" }} active" aria-current="page{{ end }}" href="/posts">Posts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "zettles" }} active" aria-current="page{{ end }}" href="/zettles">Zettles</a>
+          </li>
+          {{ if hugo.IsDevelopment }}
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "vault" }} active" aria-current="page{{ end }}" href="/vault">Vault</a>
+          </li>
+          {{ end }}
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "projects" }} active" aria-current="page{{ end }}" href="/projects">Projects</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "apps" }} active" aria-current="page{{ end }}" href="/apps">Apps</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "tags" }} active" aria-current="page{{ end }}" href="/tags">Tags</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "graphs" }} active" aria-current="page{{ end }}" href="/graphs">Graphs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{ if eq .Section "kanban" }} active" aria-current="page{{ end }}" href="/kanban/board/">Kanban Board</a>
+          </li>          
+        </ul>
+      </div>
+    </div>
+  </nav>

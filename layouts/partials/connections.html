@@ -1,0 +1,43 @@
+{{- $thisPage := . -}}
+{{- $pages := .Site.RegularPages -}}
+{{ $.Scratch.Set "connectionUuids" slice }}
+
+
+{{ range $connectionUuid := $thisPage.Params.connections }}
+  {{ if not (eq $connectionUuid $thisPage.Params.uuid) }}
+    {{ $connectionPage := (index (where $pages ".Params.uuid" $connectionUuid) 0) }}
+    {{ if $connectionPage }}
+      {{ if not (in ($.Scratch.Get "connectionUuids") $connectionPage) }}
+        {{ $.Scratch.Add "connectionUuids" (slice $connectionPage.Params.uuid) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{- range $iterPage := $pages -}}
+  {{- range $connectionUuid := $iterPage.Params.connections -}}
+    {{ if eq $connectionUuid $thisPage.Params.uuid }}
+      {{ if not (in ($.Scratch.Get "connectionUuids") $iterPage.Params.uuid) }}
+        {{ $.Scratch.Add "connectionUuids" (slice $iterPage.Params.uuid) }}
+      {{ end }}
+    {{ end }}
+  {{- end -}}
+{{- end -}}
+
+
+<a href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+  <span class="fs-5 fw-semibold">Connected Pages</span>
+</a>
+
+<div class="list-group list-group-flush border-bottom">
+{{ range $connectionUuid := ($.Scratch.Get "connectionUuids") }}
+  {{ $connectionPage := (index (where $pages ".Params.uuid" $connectionUuid) 0) }}
+  <a href="{{ $connectionPage.RelPermalink }}" class="list-group-item list-group-item-action py-3 lh-tight">
+    <div class="d-flex w-100 align-items-center justify-content-between">
+      <strong class="mb-1">{{ $connectionPage.Title }}</strong>
+      <small class="text-muted">{{ $connectionPage.Section }}</small>
+    </div>
+    {{/* <div class="col-10 mb-1 small">{{ $connectionPage.Summary }}</div> */}}
+  </a>
+{{ end }}
+</div>

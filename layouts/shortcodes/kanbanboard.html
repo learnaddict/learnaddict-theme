@@ -1,0 +1,24 @@
+{{ $columns := slice 
+    (dict "state" "todo" "heading" "To Do" "weight" 1)
+    (dict "state" "inprogress" "heading" "In Progress" "weight" 2) 
+    (dict "state" "done" "heading" "Done" "weight" 3) 
+}}
+
+<div class="kanban-board">
+    {{ range $column := sort $columns "weight" }}
+    <div class="kanban-column">
+        <div class="kanban-header">{{ $column.heading }}</div>
+        {{ $tasksSection := $.Site.GetPage "section" "tasks" }}
+        {{ range $page := $tasksSection.Pages.ByDate.Reverse }}
+        {{ if eq $page.Params.state $column.state }}
+        <div class="card kanban-card">
+            <div class="card-body">
+                <h5><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h5>
+                <div>{{ $page.Summary }}</div>
+            </div>
+        </div>
+        {{ end }}
+        {{ end }}
+    </div>
+    {{ end }}
+</div>

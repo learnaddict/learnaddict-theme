@@ -1,0 +1,22 @@
+{{ define "main" }}
+  <div class="container-md p-3 bg-white">
+    <h1>{{ .Title }}</h1>
+
+    <ul>
+      {{ with .Params.book.url }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.number_of_pages }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.publish_date }}<li>{{ . }}</li>{{ end }}
+      {{ range .Params.book.authors }}<li>{{ .name }} {{ .url }}</li>{{ end }}
+      {{ range .Params.book.publishers }}<li>{{ .name }} {{ .url }}</li>{{ end }}
+      {{ range .Params.book.subjects }}<li>{{ .name }} {{ .url }}</li>{{ end }}
+      {{ with .Params.book.identifiers.amazon }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.identifiers.isbn_10 }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.identifiers.isbn_13 }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.cover.small }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.cover.medium }}<li>{{ . }}</li>{{ end }}
+      {{ with .Params.book.cover.large }}<li>{{ . }}</li>{{ end }}
+    </ul>
+    {{ .Content }}
+  </div>
+  {{ partial "rightsidebar.html" . }}
+{{ end }}

@@ -1,0 +1,13 @@
+<div class="card mt-3">
+  <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit;">
+    {{ with .Params.cover }}
+    <img src="{{ .image }}" class="card-img-top" alt="{{ .alt }}" style="max-height: 300px; max-width: auto; object-fit: cover;">
+    {{ end }}
+  </a>
+  <div class="card-body">
+    <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit;">
+      <h5 class="card-title">{{ .LinkTitle }}</h5>
+    </a>
+      <p class="card-text">{{ .Summary }}</p>
+  </div>
+</div>

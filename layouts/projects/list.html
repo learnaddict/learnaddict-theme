@@ -1,0 +1,23 @@
+{{ define "main" }}
+<div class="container-md p-3 bg-white">
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+  <ul class="list-group">
+  {{ range .Pages }}
+  {{ $currentUniqueID := .Params.uniqueid }}
+  <li class="list-group-item">{{ .Title }}</li>
+  
+  <ul>
+    {{ range $.Pages }}
+      {{ if and .Params.parent (eq .Params.parent $currentUniqueID) }}
+      <li class="list-group-item">{{ .Title }}</li>
+      {{ end }}
+    {{ end }}
+  </ul>
+{{ end }}
+</ul>
+  </div>
+</div>
+{{ end }}
+
+

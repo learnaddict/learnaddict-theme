@@ -1,0 +1,56 @@
+
+
+
+
+{{ $.Scratch.Set "unique" (slice) }}
+{{ $.Scratch.Set "duplicate" (slice) }}
+{{ range .Site.RegularPages }}
+  {{ if isset .Params "uniqueid" }}
+  {{ $currentId := .Params.uniqueid }}
+    {{ $unique := $.Scratch.Get "unique" }}
+    {{ if in $unique $currentId }}
+    {{ $.Scratch.Add "duplicate" $currentId }}
+    {{ else }}
+        {{ $.Scratch.Add "unique" $currentId }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $duplicate := $.Scratch.Get "duplicate" }}
+{{ if gt (len $duplicate) 0 }}
+    <div class="alert alert-danger" role="alert">
+        Duplicate UniqueID found:
+        <ul>
+        {{ range $duplicate }} 
+            <li>{{ . }}</li>
+        {{ end }}
+        </ul>
+    </div>
+{{ end }}
+
+
+{{ $.Scratch.Set "unique" (slice) }}
+{{ $.Scratch.Set "duplicate" (slice) }}
+{{ range .Site.RegularPages }}
+  {{ if isset .Params "slug" }}
+  {{ $currentId := .Params.slug }}
+    {{ $unique := $.Scratch.Get "unique" }}
+    {{ if in $unique $currentId }}
+    {{ $.Scratch.Add "duplicate" $currentId }}
+    {{ else }}
+        {{ $.Scratch.Add "unique" $currentId }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $duplicate := $.Scratch.Get "duplicate" }}
+{{ if gt (len $duplicate) 0 }}
+    <div class="alert alert-danger" role="alert">
+        Duplicate Slug found:
+        <ul>
+        {{ range $duplicate }} 
+            <li>{{ . }}</li>
+        {{ end }}
+        </ul>
+    </div>
+{{ end }}
