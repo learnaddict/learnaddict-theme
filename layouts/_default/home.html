@@ -2,15 +2,18 @@
 <div class="container-md p-3 bg-white">
   {{ .Content }}
 
+  
   {{ if hugo.IsDevelopment }}
+    <h5>Draft Posts</h5>
     {{ range where .Site.RegularPages "Draft" true }}
       {{ partial "cards/hcard.html" . }}
     {{ end }}
   {{ end }}
 
-
-  {{ range where .Site.RegularPages "Section" "posts" }}
-    
+  <h5>Recent Posts</h5>
+  {{ range first 5 (where .Site.RegularPages.ByDate.Reverse "Section" "posts") }}
+    {{ partial "cards/hcard.html" . }}
   {{ end }}
+
 </div>
 {{ end }}
