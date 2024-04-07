@@ -1,8 +1,16 @@
 {{ define "main" }}
 <div class="container-md p-3 bg-white">
   {{ .Content }}
+
+  {{ if hugo.IsDevelopment }}
+    {{ range where .Site.RegularPages "Draft" true }}
+      {{ partial "cards/hcard.html" . }}
+    {{ end }}
+  {{ end }}
+
+
   {{ range where .Site.RegularPages "Section" "posts" }}
-    {{ partial "cards/hcard.html" . }}
+    
   {{ end }}
 </div>
 {{ end }}
