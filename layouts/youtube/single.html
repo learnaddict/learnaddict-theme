@@ -1,0 +1,21 @@
+{{ define "main" }}
+  <div class="container-md p-3 bg-white col-8">
+    <h1>{{ .Title }}</h1>
+    {{ if .Date }}
+      {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+      {{ $dateHuman := .Date | time.Format ":date_long" }}
+      <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+    {{ else }}
+      {{ with .GitInfo }}
+        {{ .AuthorDate.Format "2006-01-02" }} 
+      {{ end }}
+    {{ end }}
+    {{ with .Params.youtube }}
+    <iframe width="420" height="315"
+    src="https://www.youtube.com/embed/{{- . -}}">
+    </iframe>
+    {{ end }}
+    {{ .Content }}
+  </div>
+  {{ partial "rightsidebar.html" . }}
+{{ end }}

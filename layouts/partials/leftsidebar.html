@@ -1,23 +1,42 @@
-<div class="d-none d-lg-block d-flex flex-column flex-shrink-0 p-3 col-1=2">
-    <ul class="list-unstyled ps-0">
-      
+{{$cpage := . }}
 
-      {{- if .Site.Taxonomies.tags }}
-      
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#tags-collapse" aria-expanded="true">
-          Tags
-        </button>
-        <div class="collapse show" id="tags-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            {{$cLink := .RelPermalink}}
-            {{- range .Site.Taxonomies.tags.Alphabetical }}
-            <li><a href="{{ .Page.RelPermalink }}" class="link-dark rounded{{ if eq .Page.RelPermalink $cLink }} active{{ end }}">{{- .Page.LinkTitle -}}</a></li>
-            {{- end }}
-          </ul>
-        </div>
-      </li>
-      <li class="border-top my-3"></li>
-      {{- end }}
-    </ul>
-  </div>
+<div class="d-none d-lg-block d-flex flex-column flex-shrink-0 p-3 col-1=2">
+  <ul class="list-unstyled ps-0">
+    {{- if .Site.Taxonomies.tags }}
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#tags-collapse" aria-expanded="true">
+        Tags
+      </button>
+      <div class="collapse show" id="tags-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+        {{- range .Site.Taxonomies.tags.Alphabetical }}
+          <li><a href="{{ .Page.RelPermalink }}" class="link-dark rounded{{ if eq .Page.RelPermalink $cpage.RelPermalink }} active{{ end }}">{{- .Page.LinkTitle -}}</a></li>
+        {{- end }}
+        </ul>
+      </div>
+    </li>
+  </ul>
+  {{- end }}
+
+  {{ $types := dict "Books" "book" "Components" "component" }}
+  {{ range $title, $type := $types }}
+
+  <ul class="list-unstyled ps-0">
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#{{- $type -}}-collapse" aria-expanded="true">
+      {{ $title }}
+      </button>
+      <div class="collapse{{ if eq $cpage.Type $type }} show{{ end }}" id="{{- $type -}}-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          
+        {{ range where $.Site.RegularPages "Section" "zettles" }}
+        {{ if eq .Type $type }}
+          <li><a href="{{ .RelPermalink }}" class="link-dark rounded{{ if eq .RelPermalink $cpage.RelPermalink }} active{{ end }}">{{- .LinkTitle | truncate 50 "..." -}}</a></li>
+        {{ end }}
+        {{ end }}  
+        </ul>
+      </div>
+    </li>
+  </ul>
+  {{ end }}
+</div>
